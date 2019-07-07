@@ -19,6 +19,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"runtime"
 
 	csi "github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/golang/glog"
@@ -202,46 +203,47 @@ func (ns *GCENodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStage
 		status.Error(codes.Internal, fmt.Sprintf("error getting device name: %v", err))
 	}
 
-	devicePaths := ns.DeviceUtils.GetDiskByIdPaths(deviceName, partition)
-	devicePath, err := ns.DeviceUtils.VerifyDevicePath(devicePaths)
-
+	devicePath, err := GetDevicePath(ns, deviceName, partition, volumeKey.Name)
 	if err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprintf("Error verifying GCE PD (%q) is attached: %v", volumeKey.Name, err))
+		return nil, err
 	}
-	if devicePath == "" {
-		return nil, status.Error(codes.Internal, fmt.Sprintf("Unable to find device path out of attempted paths: %v", devicePaths))
-	}
-
 	glog.V(4).Infof("Successfully found attached GCE PD %q at device path %s.", volumeKey.Name, devicePath)
 
-	// Part 2: Check if mount already exists at targetpath
-	notMnt, err := ns.Mounter.Interface.IsLikelyNotMountPoint(stagingTargetPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			if err := ns.Mounter.Interface.MakeDir(stagingTargetPath); err != nil {
-				return nil, status.Error(codes.Internal, fmt.Sprintf("Failed to create directory (%q): %v", stagingTargetPath, err))
+	if runtime.GOOS != "windows" {
+		// Part 2: Check if mount already exists at targetpath
+		notMnt, err := ns.Mounter.Interface.IsLikelyNotMountPoint(stagingTargetPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				if err := ns.Mounter.Interface.MakeDir(stagingTargetPath); err != nil {
+					return nil, status.Error(codes.Internal, fmt.Sprintf("Failed to create directory (%q): %v", stagingTargetPath, err))
+				}
+				notMnt = true
+			} else {
+				return nil, status.Error(codes.Internal, fmt.Sprintf("Unknown error when checking mount point (%q): %v", stagingTargetPath, err))
 			}
-			notMnt = true
-		} else {
-			return nil, status.Error(codes.Internal, fmt.Sprintf("Unknown error when checking mount point (%q): %v", stagingTargetPath, err))
 		}
-	}
 
-	if !notMnt {
-		// TODO(#95): Check who is mounted here. No error if its us
-		/*
-			1) Target Path MUST be the vol referenced by vol ID
-			2) VolumeCapability MUST match
-			3) Readonly MUST match
+		if !notMnt {
+			// TODO(#95): Check who is mounted here. No error if its us
+			/*
+				1) Target Path MUST be the vol referenced by vol ID
+				2) VolumeCapability MUST match
+				3) Readonly MUST match
 
-		*/
-		return &csi.NodeStageVolumeResponse{}, nil
+			*/
+			return &csi.NodeStageVolumeResponse{}, nil
 
+		}
 	}
 
 	// Part 3: Mount device to stagingTargetPath
 	// Default fstype is ext4
-	fstype := "ext4"
+	var fstype string
+	if runtime.GOOS == "windows" {
+		fstype = "ntfs"
+	} else {
+		fstype = "ext4"
+	}
 	options := []string{}
 	if mnt := volumeCapability.GetMount(); mnt != nil {
 		if mnt.FsType != "" {

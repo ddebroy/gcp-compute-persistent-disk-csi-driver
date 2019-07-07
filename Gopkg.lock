@@ -14,6 +14,14 @@
   version = "v0.34.0"
 
 [[projects]]
+  digest = "1:2be791e7b333ff7c06f8fb3dc18a7d70580e9399dbdffd352621d067ff260b6e"
+  name = "github.com/Microsoft/go-winio"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "1a8911d1ed007260465c3bfbbc785ac6915a0bb8"
+  version = "v0.4.12"
+
+[[projects]]
   branch = "master"
   digest = "1:707ebe952a8b3d00b343c01536c79c73771d100f63ec6babeaed5c79e2b8a8dd"
   name = "github.com/beorn7/perks"
@@ -36,6 +44,14 @@
   pruneopts = "NUT"
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:641dd27985a5ae92b9286a622b675d239746cdd7e26ef590e30e57fb579e15b1"
+  name = "github.com/ddebroy/csi-proxy"
+  packages = ["pkg/api/v1alpha1"]
+  pruneopts = "NUT"
+  revision = "4006bf5bb63ee9458da6b35d3a0d890d2b479f59"
 
 [[projects]]
   branch = "master"
@@ -961,13 +977,13 @@
     "cloud.google.com/go/compute/metadata",
     "cloud.google.com/go/kms/apiv1",
     "github.com/container-storage-interface/spec/lib/go/csi",
+    "github.com/ddebroy/csi-proxy/pkg/api/v1alpha1",
     "github.com/golang/glog",
     "github.com/golang/protobuf/ptypes",
     "github.com/kubernetes-csi/csi-lib-utils/protosanitizer",
     "github.com/kubernetes-csi/csi-test/pkg/sanity",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
-    "github.com/prometheus/client_golang/prometheus",
     "golang.org/x/net/context",
     "golang.org/x/oauth2",
     "golang.org/x/oauth2/google",

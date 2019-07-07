@@ -25,7 +25,8 @@ gce-pd-driver:
 ifndef GCE_PD_CSI_STAGING_VERSION
 	$(error "Must set environment variable GCE_PD_CSI_STAGING_VERSION to staging version")
 endif
-	go build -ldflags "-X main.vendorVersion=${STAGINGVERSION}" -o bin/gce-pd-csi-driver ./cmd/
+	GOOS=linux go build -ldflags "-X main.vendorVersion=${STAGINGVERSION}" -o bin/gce-pd-csi-driver ./cmd/
+	GOOS=windows go build -ldflags "-X main.vendorVersion=${STAGINGVERSION}" -o bin/gce-pd-csi-driver.exe ./cmd/
 
 build-container:
 ifndef GCE_PD_CSI_STAGING_IMAGE
