@@ -16,10 +16,10 @@ limitations under the License.
 package gceGCEDriver
 
 import (
-        "fmt"
-        "google.golang.org/grpc/codes"
-        "google.golang.org/grpc/status"
+	"fmt"
 	winutils "github.com/ddebroy/csi-proxy/pkg/api/v1alpha1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func GetDevicePath(ns *GCENodeServer, deviceName string, partition string, volumeKey string) (string, error) {

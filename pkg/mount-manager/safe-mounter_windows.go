@@ -16,14 +16,13 @@ limitations under the License.
 
 package mountmanager
 
-import
-(
-	"strconv"
+import (
 	"fmt"
 	"os"
+	"strconv"
 
-	"k8s.io/kubernetes/pkg/util/mount"
 	"github.com/ddebroy/csi-proxy/pkg/api/v1alpha1"
+	"k8s.io/kubernetes/pkg/util/mount"
 )
 
 var _ mount.Interface = &ProxyMounter{}
@@ -40,7 +39,6 @@ func (mounter *ProxyMounter) formatAndMount(source string, target string, fstype
 	err = v1alpha1.FormatAndMountDisk(diskNumber, "NTFS", target)
 	return err
 }
-
 
 func (mounter *ProxyMounter) Mount(source string, target string, fstype string, options []string) error {
 	return fmt.Errorf("Mount not implementend for ProxyMounter")
@@ -125,9 +123,6 @@ func (mounter *ProxyMounter) PrepareSafeSubpath(subPath mount.Subpath) (newHostP
 func (mounter *ProxyMounter) SafeMakeDir(pathname string, base string, perm os.FileMode) error {
 	return fmt.Errorf("SafeMakeDir  not implemented for ProxyMounter")
 }
-
-
-
 
 func NewSafeMounter() *mount.SafeFormatAndMount {
 	proxyMounter := &ProxyMounter{0}
