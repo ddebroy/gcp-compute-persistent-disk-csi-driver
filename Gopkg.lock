@@ -47,11 +47,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:641dd27985a5ae92b9286a622b675d239746cdd7e26ef590e30e57fb579e15b1"
+  digest = "1:dbb0760716d02b556f4cf61fdf1dbaa027ec12a39953b3296321693f8194926a"
   name = "github.com/ddebroy/csi-proxy"
   packages = ["pkg/api/v1alpha1"]
   pruneopts = "NUT"
-  revision = "4006bf5bb63ee9458da6b35d3a0d890d2b479f59"
+  revision = "b6a3cb20ac2365b8a247a8d254c09ed1cc251ab0"
 
 [[projects]]
   branch = "master"

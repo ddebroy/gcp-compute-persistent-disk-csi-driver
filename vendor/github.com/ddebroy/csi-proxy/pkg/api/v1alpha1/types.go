@@ -21,6 +21,8 @@ const (
 	// CallGetDiskNumberWithId system call type
 	CallGetDiskNumberWithId = 2000 + iota
 	CallFormatAndMountDisk
+	CallMkDir
+	CallMount
 )
 
 // Operation is the enumerator defining the underlay system call
@@ -32,25 +34,48 @@ type Message struct {
 	Body json.RawMessage
 }
 
-// GetDiskNumberWithIdReq body of the request for GetDiskDeviceWithIdReq
+// GetDiskNumberWithIdReq body of the request for GetDiskDeviceWithId
 type GetDiskNumberWithIdReq struct {
-	DeviceId    string
+	DeviceId string
 }
 
-// GetDiskNumberWithIdRsp body of the response for GetDiskDeviceWithIdReq
+// GetDiskNumberWithIdRsp body of the response for GetDiskDeviceWithId
 type GetDiskNumberWithIdRsp struct {
-	DiskNumber	int
-	Err     	string
+	DiskNumber int
+	Err        string
 }
 
-// FormatAndMountDisk body of request for FormatAndMountDisk
+// FormatAndMountDiskReq body of request for FormatAndMountDisk
 type FormatAndMountDiskReq struct {
 	DiskNumber int
-	FsType	string
-	MountPath string
+	FsType     string
+	MountPath  string
 }
 
-// FormatAndMountDiskRsp body of response for FormatAndMountDiskRsp
+// FormatAndMountDiskRsp body of response for FormatAndMountDisk
 type FormatAndMountDiskRsp struct {
+	Err string
+}
+
+// MkdirReq body of request for MkDir
+type MkDirReq struct {
+	Path string
+}
+
+// MkDirRsp body of response for MkDir
+type MkDirRsp struct {
+	Err string
+}
+
+// MountReq body of request for Mount
+type MountReq struct {
+	SourcePath string
+	TargetPath string
+	FsType     string
+	Options    []string
+}
+
+// MountRsp body of response for Mount
+type MountRsp struct {
 	Err string
 }

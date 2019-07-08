@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/ddebroy/csi-proxy/pkg/api/v1alpha1"
 	"k8s.io/kubernetes/pkg/util/mount"
@@ -31,17 +32,25 @@ type ProxyMounter struct {
 	dummy int
 }
 
+func normalizeWindowsPath(path string) string {
+	normalizedPath := strings.Replace(path, "/", "\\", -1)
+	if strings.HasPrefix(normalizedPath, "\\") {
+		normalizedPath = "c:" + normalizedPath
+	}
+	return normalizedPath
+}
+
 func (mounter *ProxyMounter) formatAndMount(source string, target string, fstype string, options []string) error {
 	diskNumber, err := strconv.Atoi(source)
 	if err != nil {
 		return err
 	}
-	err = v1alpha1.FormatAndMountDisk(diskNumber, "NTFS", target)
+	err = v1alpha1.FormatAndMountDisk(diskNumber, "NTFS", normalizeWindowsPath(target))
 	return err
 }
 
 func (mounter *ProxyMounter) Mount(source string, target string, fstype string, options []string) error {
-	return fmt.Errorf("Mount not implementend for ProxyMounter")
+	return v1alpha1.Mount(normalizeWindowsPath(source), normalizeWindowsPath(target), fstype, options)
 }
 
 func (mounter *ProxyMounter) Unmount(target string) error {
@@ -57,7 +66,8 @@ func (mounter *ProxyMounter) IsMountPointMatch(mp mount.MountPoint, dir string) 
 }
 
 func (mounter *ProxyMounter) IsLikelyNotMountPoint(file string) (bool, error) {
-	return false, fmt.Errorf("IsLikelyNotMountPoint not implemented for ProxyMounter")
+	return true, nil
+	// return true, fmt.Errorf("IsLikelyNotMountPoint not implemented for ProxyMounter")
 }
 
 func (mounter *ProxyMounter) GetMountRefs(pathname string) ([]string, error) {
@@ -77,7 +87,7 @@ func (mounter *ProxyMounter) DeviceOpened(pathname string) (bool, error) {
 }
 
 func (mounter *ProxyMounter) MakeDir(pathname string) error {
-	return fmt.Errorf("MakeDir not implemented for ProxyMounter")
+	return v1alpha1.Mkdir(normalizeWindowsPath(pathname))
 }
 
 func (mounter *ProxyMounter) MakeFile(pathname string) error {

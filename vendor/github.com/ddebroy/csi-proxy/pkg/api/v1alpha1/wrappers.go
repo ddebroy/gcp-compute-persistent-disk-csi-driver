@@ -50,27 +50,73 @@ func GetDiskNumberWithID(storageId string) (*int, error) {
 }
 
 // FormatAndMountDisk formats and mounts the disk with number
-func FormatAndMountDisk(diskNumber int, fsType string, mountPath string) (error) {
+func FormatAndMountDisk(diskNumber int, fsType string, mountPath string) error {
 	r, w, err := NewClientPipe()
 	if err != nil {
 		return err
 	}
-	
+
 	if err = w.Write(CallFormatAndMountDisk, &FormatAndMountDiskReq{diskNumber, fsType, mountPath}); err != nil {
 		return err
 	}
-	
+
 	var response FormatAndMountDiskRsp
 	_, err = r.ReadWithBody(&response)
 	if err != nil {
 		return err
 	}
-	
+
 	if response.Err != "" {
 		return fmt.Errorf(response.Err)
 	}
 	return nil
-} 
+}
+
+// Mkdir creates the path in the host
+func Mkdir(path string) error {
+	r, w, err := NewClientPipe()
+	if err != nil {
+		return err
+	}
+
+	if err = w.Write(CallMkDir, &MkDirReq{path}); err != nil {
+		return err
+	}
+
+	var response MkDirRsp
+	_, err = r.ReadWithBody(&response)
+	if err != nil {
+		return err
+	}
+
+	if response.Err != "" {
+		return fmt.Errorf(response.Err)
+	}
+	return nil
+}
+
+// Mount mounts the source path to target path in host
+func Mount(source string, target string, fstype string, options []string) error {
+	r, w, err := NewClientPipe()
+	if err != nil {
+		return err
+	}
+
+	if err = w.Write(CallMount, &MountReq{source, target, fstype, options}); err != nil {
+		return err
+	}
+
+	var response MountRsp
+	_, err = r.ReadWithBody(&response)
+	if err != nil {
+		return err
+	}
+
+	if response.Err != "" {
+		return fmt.Errorf(response.Err)
+	}
+	return nil
+}
 
 // NewClientPipe opens the pipe with the name passed
 func NewClientPipe() (*Reader, *Writer, error) {
