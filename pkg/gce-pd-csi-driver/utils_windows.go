@@ -17,6 +17,8 @@ package gceGCEDriver
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	winutils "github.com/ddebroy/csi-proxy/pkg/api/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -29,4 +31,16 @@ func GetDevicePath(ns *GCENodeServer, deviceName string, partition string, volum
 	}
 	devicePath := fmt.Sprintf("%d", *diskNumber)
 	return devicePath, nil
+}
+
+func FormatAndMount(ns *GCENodeServer, source string, target string, fstype string, options []string) error {
+	diskNumber, err := strconv.Atoi(source)
+	if err != nil {
+		return err
+	}
+	target = strings.Replace(target, "/", "\\", -1)
+        if strings.HasPrefix(target, "\\") {
+                target = "c:" + target
+        }
+	return winutils.FormatAndMountDisk(diskNumber, "NTFS", target)
 }

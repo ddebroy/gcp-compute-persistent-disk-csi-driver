@@ -257,7 +257,7 @@ func (ns *GCENodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStage
 		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("Block volume support is not yet implemented"))
 	}
 
-	err = ns.Mounter.FormatAndMount(devicePath, stagingTargetPath, fstype, options)
+	err = FormatAndMount(ns, devicePath, stagingTargetPath, fstype, options)
 	if err != nil {
 		return nil, status.Error(codes.Internal,
 			fmt.Sprintf("Failed to format and mount device from (%q) to (%q) with fstype (%q) and options (%q): %v",

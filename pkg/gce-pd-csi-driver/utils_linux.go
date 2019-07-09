@@ -33,3 +33,7 @@ func GetDevicePath(ns *GCENodeServer, deviceName string, partition string, volum
 	}
 	return devicePath, nil
 }
+
+func FormatAndMount(ns *GCENodeServer, source string, target string, fstype string, options []string) error {
+	return ns.Mounter.FormatAndMount(source, target, fstype, options)
+}
